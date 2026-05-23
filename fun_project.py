@@ -101,4 +101,8 @@ for year, df in combined.items():
 
 #2 ----- combined dataframes and inserted year column so the combining makes more sense!--------
 
+master = pd.concat(combined.values(),ignore_index=True)
+
+#3 ------ now we actually concatenate the dataframes INTO ONE BIG DATAFRAME. The .concat() function allows us to stack dataframes on top of each other vertically! -------
+
 
