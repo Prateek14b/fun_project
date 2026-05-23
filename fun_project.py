@@ -132,6 +132,13 @@ master["happiness_rank"] = master["happiness_rank"].astype("Int64")
 master = master.dropna(subset=["country", "happiness_score"]) #dropping NA values for country and happiness rank columns.
 master = master.sort_values(["year", "happiness_rank"]).reset_index(drop=True) #sorting based on happiness rank within years, and resetting index values after cus this is convention.
 
-#5 ----- CLEANUP (rounding numericals to 3 dp, strip() on string column values, etc.) ------
+#5 ----- DID CLEANUP (rounding numericals to 3 dp, strip() on string column values, etc.) ------
 
+ 
+print(f"Total rows: {len(master)}")
+print(f"Years: {sorted(master['year'].unique())}")
+print(f"Regions: {sorted(master['region'].dropna().unique())}")
+print(f"\nSample:\n{master.head(10).to_string()}")
+print(f"\nMissing values:\n{master.isnull().sum()}")
 
+#6 ---- PRINT PREVIEW -----
