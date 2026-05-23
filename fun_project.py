@@ -142,3 +142,8 @@ print(f"\nSample:\n{master.head(10).to_string()}")
 print(f"\nMissing values:\n{master.isnull().sum()}")
 
 #6 ---- PRINT PREVIEW -----
+
+master.to_csv("happiness_cleaned.csv", index=False)
+print("\n✅ Saved to happiness_clean.csv")
+
+#7 --- Save master df as a csv file! ----
