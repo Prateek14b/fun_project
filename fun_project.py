@@ -103,7 +103,7 @@ for year, df in combined.items():
 
 master = pd.concat(combined.values(),ignore_index=True)
 
-#3 ------ now we actually concatenate the dataframes INTO ONE BIG DATAFRAME. The .concat() function allows us to stack dataframes on top of each other vertically! -------
+#3 ------ now we actually concatenated the dataframes INTO ONE BIG DATAFRAME. The .concat() function allows us to stack dataframes on top of each other vertically! -------
 
 
 #now it's time to fix a major inconsistency: 'no region' column from 2017 onwards, but they exist for 2015 & 2016!
@@ -114,5 +114,24 @@ region_lookup = ( pd.concat(combined[2015]["country", "region"], combined[2016][
 master["region"] = master.apply(lambda row: row["region"] if pd.notna(row.get("region")) else region_lookup.get(row["country"]), axis=1 )
 
 ''' now we insert a new "region" column into the master df, and fill out values for that column based on lookup results from the region_lookup df'''
+
+#4 ----- now we inserted a 'regions' column into master df, populating its value for every row based on looking up from 2015 and 2016 regions! ------
+
+''' now we still have a few minor fixes to make. for example, we could strip() all string column values so theres more consistency.
+Plus we could round up all numeric values to 3 dp for readability. 
+Finally, we can sort the master df further -- based on happiness rank (within the alr sorted year indexes!)'''
+
+#this selects string columns only and strips whitespace.
+for col in master.select_dtypes(include="object").columns:
+    master[col] = master[col].str.strip()
+#this selected numeric columns only and rounds them to 3 dp. coerce just catched any error non-numeric values like alpha or alphanumeric and converts them into NaN (pandas' version of NULL vals) so we can catch these later and drop them using dropna()
+for col in master.select_dtypes(include="number").columns:
+    master[col]= pd.to_numeric(master[col], errors="coerce").round(3)
+
+master["happiness_rank"] = master["happiness_rank"].astype("Int64")
+master = master.dropna(subset=["country", "happiness_score"]) #dropping NA values for country and happiness rank columns.
+master = master.sort_values(["year", "happiness_rank"]).reset_index(drop=True) #sorting based on happiness rank within years, and resetting index values after cus this is convention.
+
+#5 ----- CLEANUP (rounding numericals to 3 dp, strip() on string column values, etc.) ------
 
 
