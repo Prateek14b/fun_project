@@ -107,7 +107,7 @@ master = pd.concat(combined.values(),ignore_index=True)
 
 
 #now it's time to fix a major inconsistency: 'no region' column from 2017 onwards, but they exist for 2015 & 2016!
-region_lookup = ( pd.concat(combined[2015]["country", "region"], combined[2016]["country", "region"], ignore_index=True).set_index("country")["region"].to_dict() )
+region_lookup = ( pd.concat(combined[2015]["country", "region"], combined[2016]["country", "region"], ignore_index=True).dropna().set_index("country")["region"].to_dict() )
 
 '''here, we combined 2015 and 2016 dfs into one, only took the country and region columns that are relevant for filling the new "region" column's values we will insert into master df. then we reset index from 0,1,2.. to country so we can easily look up. finally, we convert into dictionary for even faster lookup!'''
 
