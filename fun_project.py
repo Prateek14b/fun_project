@@ -1,4 +1,5 @@
 import pandas as pd
+from sqlalchemy import create_engine
 
 def load_2015(path):
     df = pd.read_csv(path)
@@ -163,3 +164,10 @@ master.to_csv("happiness_cleaned.csv", index=False)
 print("\n✅ Saved to happiness_clean.csv")
 
 #7 --- Save master df as a csv file! ----
+
+engine = create_engine("postgresql://admin:password@localhost:5432/happinessdb")
+master.to_sql("happiness", engine, if_exists="replace", index=False)
+
+print("✅ Data loaded into Postgres table: happiness")
+
+#8 Loading our dataframe into Postgres, via create_engine() function as the connector to our postgres container.
