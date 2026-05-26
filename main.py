@@ -59,7 +59,28 @@ def get_stats(year: int=2019, region: str=None, metric: str= "happiness_score"):
     with engine.connect() as conn:
         rows = conn.execute(text(query), params).fetchall() #now, rows variable holds our result in the form of a bunch of table rows.
 
-    
+    #time to convert and return results as website readable JSON format
+
+    #convert into JSON-friendly python dict
+    #since "rows" holds output as a bunch of rows, we do list comprehension to loop over all rows.
+
+    return {
+        "year": year,
+        "region": region,
+        "metric": metric,
+        "data": [
+            {
+                "country": r[0],
+                "region": r[1],
+                "rank": r[2],
+                "value": r[3] #this is whatever metric the user selected.
+            }
+            for r in rows
+        ]
+    }
+
+
+
 
 
 
