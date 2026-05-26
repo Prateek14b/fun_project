@@ -53,6 +53,16 @@ def get_stats(year: int=2019, region: str=None, metric: str= "happiness_score"):
         region_filter="AND region = :region" if region else "" #we could've avoided this and written AND region = :region directly above in the query -- below WHERE year= :year -- itself. But we wanted to guard against the rows that may have no region so we did this.
     )
 
+    params = {"year": year, "region": region} #to equate query variable to our Python arguments!
+
+    #we keep a connection to postgres open, and execute our query
+    with engine.connect() as conn:
+        rows = conn.execute(text(query), params).fetchall() #now, rows variable holds our result in the form of a bunch of table rows.
+
     
+
+
+
+
 
     
