@@ -39,5 +39,20 @@ def get_stats(year: int=2019, region: str=None, metric: str= "happiness_score"):
     if metric not in allowed_metrics:
         metric = "happiness_score" #fall back to default column/metric if an invalid metric is specified in request.
 
+    #time to build the specific SQL query using the function arguments
+    #that fastAPI filled in for us from reading the GET request.
+
+    query= """
+        SELECT country, region, happiness_rank, {metric_col}
+        FROM happiness
+        WHERE year = :year
+        {region_filter} 
+        ORDER BY happiness_rank
+    """.format(
+        metric_col=metric, #metric_col is basically the particular metric user wants to know about the region in question.
+        region_filter="AND region = :region" if region else "" #we could've avoided this and written AND region = :region directly above in the query -- below WHERE year= :year -- itself. But we wanted to guard against the rows that may have no region so we did this.
+    )
+
     
+
     
