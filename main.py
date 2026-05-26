@@ -79,6 +79,26 @@ def get_stats(year: int=2019, region: str=None, metric: str= "happiness_score"):
         ]
     }
 
+#rather than hardcoding the sliders in the frontend with arbitrary values,
+# we populate the year slider and region dropdown with whatever values are actually
+# in the database. 
+@app.get("/api/filters")
+def get_filters():
+    with engine.connect() as conn:
+        years = [
+            r[0] for r in conn.execute(
+                text("SELECT DISTINCT year FROM happiness ORDER BY year") #we write our custom query to retrieve only distinct year values from HAPPINESS table!
+            ).fetchall()
+        ]
+        regions = [
+            r[0] for r in conn.execute(
+                text("SELECT DISTINCT region from HAPPINESS ORDER BY region") #custom query to retrieve only distinct region values.
+            ).fetchall()
+        ]
+    # Returns e.g. {"years": [2015,2016,2017,2018,2019], "regions": [...]}
+    # React uses this to build the slider and dropdown options dynamically
+    return {"years": years, "regions": regions} #finally we return a JSON dict-type result!
+
 
 
 
