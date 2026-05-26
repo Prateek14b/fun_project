@@ -2,7 +2,8 @@ import pandas as pd
 
 def load_2015(path):
     df = pd.read_csv(path)
-    df.rename(columns={
+    print(df.columns.tolist())
+    df=df.rename(columns={
         "Country": "country",
         "Region": "region",
         "Happiness Rank": "happiness_rank",
@@ -19,7 +20,7 @@ def load_2015(path):
 
 def load_2016(path):
     df = pd.read_csv(path)
-    df.rename(columns={
+    df=df.rename(columns={
         "Country": "country",
         "Region": "region",
         "Happiness Rank": "happiness_rank",
@@ -36,7 +37,7 @@ def load_2016(path):
 
 def load_2017(path):
     df = pd.read_csv(path)
-    df.rename(columns={
+    df=df.rename(columns={
                 "Country":                       "country",
         "Happiness.Rank":                "happiness_rank",
         "Happiness.Score":               "happiness_score",
@@ -50,10 +51,11 @@ def load_2017(path):
     df = df[["country","happiness_rank","happiness_score",
         "gdp_per_capita","social_support","life_expectancy",
         "freedom","corruption","generosity"]]
+    return df
     
 def load_2018(path):
     df = pd.read_csv(path)
-    df.rename(columns= {
+    df=df.rename(columns= {
         "Country or region":             "country",
         "Overall rank":                  "happiness_rank",
         "Score":                         "happiness_score",
@@ -67,10 +69,11 @@ def load_2018(path):
     df = df[["country","happiness_rank","happiness_score",
         "gdp_per_capita","social_support","life_expectancy",
         "freedom","corruption","generosity"]]
+    return df
 
 def load_2019(path):
     df = pd.read_csv(path)
-    df.rename(columns={
+    df=df.rename(columns={
         "Country or region":             "country",
         "Overall rank":                  "happiness_rank",
         "Score":                         "happiness_score",
@@ -84,16 +87,17 @@ def load_2019(path):
     df = df[["country","happiness_rank","happiness_score",
         "gdp_per_capita","social_support","life_expectancy",
         "freedom","corruption","generosity"]]
+    return df
 
 #1 ----- created functions for csv -> dataframes for each year! ------
 
 
 combined = { #combined dataframes into a quasi-dictionary for convenience.
-    "2015": load_2015("~/archive (1)/2015.csv"),
-    "2016": load_2016("~/archive (1)/2016.csv"),
-    "2017": load_2017("~/archive (1)/2017.csv"),
-    "2018": load_2018("~/archive (1)/2018.csv"),
-    "2019": load_2019("~/archive (1)/2019.csv")
+    "2015": load_2015("/Users/Hamsa/Desktop/just_start/archive (1)/2015.csv"),
+    "2016": load_2016("/Users/Hamsa/Desktop/just_start/archive (1)/2016.csv"),
+    "2017": load_2017("/Users/Hamsa/Desktop/just_start/archive (1)/2017.csv"),
+    "2018": load_2018("/Users/Hamsa/Desktop/just_start/archive (1)/2018.csv"),
+    "2019": load_2019("/Users/Hamsa/Desktop/just_start/archive (1)/2019.csv")
 }
 
 for year, df in combined.items():
@@ -107,7 +111,20 @@ master = pd.concat(combined.values(),ignore_index=True)
 
 
 #now it's time to fix a major inconsistency: 'no region' column from 2017 onwards, but they exist for 2015 & 2016!
-region_lookup = ( pd.concat(combined[2015]["country", "region"], combined[2016]["country", "region"], ignore_index=True).dropna().set_index("country")["region"].to_dict() )
+region_lookup = ( pd.concat([combined["2015"][["country", "region"]], combined["2016"][["country", "region"]]], ignore_index=True)
+                 .dropna()
+                 .set_index("country")["region"]
+                 .to_dict()
+                )
+# Fix name mismatches
+region_lookup["Taiwan Province of China"] = region_lookup["Taiwan"]
+region_lookup["Hong Kong S.A.R., China"] = region_lookup["Hong Kong"]
+region_lookup["Trinidad & Tobago"] = region_lookup["Trinidad and Tobago"]
+
+# Manually assign genuinely new countries
+region_lookup["Northern Cyprus"] = "Middle East and Northern Africa"
+region_lookup["North Macedonia"] = "Central and Eastern Europe"
+region_lookup["Gambia"] = "Sub-Saharan Africa"
 
 '''here, we combined 2015 and 2016 dfs into one, only took the country and region columns that are relevant for filling the new "region" column's values we will insert into master df. then we reset index from 0,1,2.. to country so we can easily look up. finally, we convert into dictionary for even faster lookup!'''
 
@@ -142,7 +159,6 @@ print(f"\nSample:\n{master.head(10).to_string()}")
 print(f"\nMissing values:\n{master.isnull().sum()}")
 
 #6 ---- PRINT PREVIEW -----
-
 master.to_csv("happiness_cleaned.csv", index=False)
 print("\n✅ Saved to happiness_clean.csv")
 
