@@ -82,7 +82,7 @@ def get_stats(year: int=2019, region: str=None, metric: str= "happiness_score"):
 #rather than hardcoding the sliders in the frontend with arbitrary values,
 # we populate the year slider and region dropdown with whatever values are actually
 # in the database. 
-@app.get("/api/filters")
+@app.get("/api/filters") #defines the API call via which React can call get_filter() 
 def get_filters():
     with engine.connect() as conn:
         years = [
