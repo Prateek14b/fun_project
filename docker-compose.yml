@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+
+  db:
+    image: postgres
+    container_name: happiness-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password 
+      POSTGRES_DB: happinessdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data #we name this volume so that it persists data between restarts!
+
+  #fastAPI backend
+  backend:
+    build: . #build from dockerfile in root folder
+    container_name: happiness-backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db #wait for db to start before backend
+    environment:
+      DATABASE_URL: postgresql://admin:password@db:5432/happinessdb #we define connector URL to establish communication with postgres!
+
+    #react frontend
+  frontend:
+    build: ./frontend #build from Dockerfile in frontend folder
+    container_name: happiness-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend #wait for backend before frontend
+
+volumes:
+  postgres_data: #named volume so data survives container restarts
+  
