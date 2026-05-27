@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, text
+import os
 
 app = FastAPI() #creates a fastAPI app instance.
 
@@ -16,7 +17,7 @@ app.add_middleware(
 
 #-----Database connection via SQLAlchemy's create_engine(); we use postgres container's unique database URL to securely connect.----
 #-----port 5432 is whene Docker is exposing Postgres container on ----
-engine = create_engine("postgresql://admin:password@localhost:5432/happinessdb")
+engine = create_engine(os.getenv("DATABASE_URL", "postgresql://admin:password@localhost:5432/happinessdb"))
 
 # --- Routes -----------
 # @app.get("/api/stats") is the standard form for a HTTP request to fastAPI
