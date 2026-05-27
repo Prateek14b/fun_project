@@ -150,6 +150,7 @@ master["happiness_rank"] = master["happiness_rank"].astype("Int64")
 master = master.dropna(subset=["country", "happiness_score"]) #dropping NA values for country and happiness rank columns.
 master = master.sort_values(["year", "happiness_rank"]).reset_index(drop=True) #sorting based on happiness rank within years, and resetting index values after cus this is convention.
 
+master["year"]=master["year"].astype(int)
 #5 ----- DID CLEANUP (rounding numericals to 3 dp, strip() on string column values, etc.) ------
 
  
