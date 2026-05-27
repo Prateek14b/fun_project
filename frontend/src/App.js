@@ -21,4 +21,21 @@ const REGION_COLORS = {
   "Southern Asia": "#bab0ac",
 };
 
+/* this is the function that returns the entire webpage,
+and takes care of re-rendering changes and sending API calls.*/
+export default function App() {
+  const [filters, setFilters] = useState({ years: [], regions: []});
+  // useState is a commonly used React hook, to define behavior of a component.
+  const [year, setYear] = useState(2019);
 
+  const [region, setRegion] = useState(""); //empty string means all regions
+
+  const [metric, setMetric] = useState("happiness_score");
+
+  const [data, setData] = useState([]); //chart data retruned from /api/stats query -- basically an array of country objects.
+
+  const [loading, setLoading] = useState(false); //used to show "Loading..." text
+
+
+  
+}
