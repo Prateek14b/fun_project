@@ -1,5 +1,7 @@
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
+import os
+import time
 
 def load_2015(path):
     df = pd.read_csv(path)
@@ -94,11 +96,11 @@ def load_2019(path):
 
 
 combined = { #combined dataframes into a quasi-dictionary for convenience.
-    "2015": load_2015("/Users/Hamsa/Desktop/just_start/archive (1)/2015.csv"),
-    "2016": load_2016("/Users/Hamsa/Desktop/just_start/archive (1)/2016.csv"),
-    "2017": load_2017("/Users/Hamsa/Desktop/just_start/archive (1)/2017.csv"),
-    "2018": load_2018("/Users/Hamsa/Desktop/just_start/archive (1)/2018.csv"),
-    "2019": load_2019("/Users/Hamsa/Desktop/just_start/archive (1)/2019.csv")
+    "2015": load_2015("2015.csv"),
+    "2016": load_2016("2016.csv"),
+    "2017": load_2017("2017.csv"),
+    "2018": load_2018("2018.csv"),
+    "2019": load_2019("2019.csv")
 }
 
 for year, df in combined.items():
@@ -166,7 +168,22 @@ print("\n✅ Saved to happiness_clean.csv")
 
 #7 --- Save master df as a csv file! ----
 
-engine = create_engine("postgresql://admin:password@localhost:5432/happinessdb")
+engine = create_engine(os.getenv("DATABASE_URL", "postgresql://admin:password@localhost:5432/happinessdb"))
+# Wait for Postgres to be ready
+max_retries = 10
+for i in range(max_retries):
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        print("✅ Connected to Postgres")
+        break
+    except Exception as e:
+        print(f"Waiting for Postgres... attempt {i+1}/{max_retries}")
+        time.sleep(3)
+else:
+    print("❌ Could not connect to Postgres after retries")
+    exit(1)
+
 master.to_sql("happiness", engine, if_exists="replace", index=False)
 
 print("✅ Data loaded into Postgres table: happiness")
